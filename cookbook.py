@@ -15,6 +15,8 @@ posts_tags_table = Table(
 )
 
 
+
+
 class User(Base):
     __tablename__ = 'users'
 
@@ -31,7 +33,6 @@ class Post(Base):
     __tablename__ = 'posts'
 
     id = Column(Integer, primary_key=True)
-    # user_id = Column(Integer, ForeignKey(User.id), nullable=False)
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
     title = Column(String(40), nullable=False)
     text = Column(Text, nullable=False)
@@ -63,23 +64,33 @@ class Tag(Base):
     def __repr__(self):
         return f'<Tag # {self.id} {self.name}>'
 
-def create_tags():
-    session = Session()
-    tag = Post(title=Post.title)
-    session.add(tag)
-    session.flush(session)
-    tag1 = Tag(id=tag.id, name='пирог')
-    session.add(tag1)
 
+
+
+
+def create_post_user_tags():
+    session = Session()
+
+    user = User(username='Third')
+    session.add(user)
     session.commit()
-    session.close()
+    session.refresh(user)
+
+    post = Post(user_id=user.id, title='Post_new', text='My new post in there')
+    session.add(post)
+    session.commit()
+    session.refresh(post)
+
+    post.tags.append(Tag(name='Пирог'))
+    session.commit()
+
 
 def create_users_posts():
     session = Session()
+
     user = User(username='First')
     session.add(user)
     session.flush(session)
-
     post1 = Post(user_id=user.id, title='Грибной пирог', text="""
     Пора грибов настала. 
     Собирать их приятно, да. А вот потом возни с ними много.
@@ -182,6 +193,7 @@ def create_users_posts():
     У меня всего 10 штук поместилось в ложку. Значит крупные, надо мельче. 
     Добавляем сметанку или турецкий йогурт.    
     Приятного!""")
+
     session.add(post1)
     session.add(post2)
 
@@ -258,9 +270,13 @@ def main():
     :return:
     """
     Base.metadata.create_all()
-    create_tags()
+    print('засолка')
+    create_post_user_tags()
+    print('засолка2')
     create_users_posts()
+    print('засолка3')
     show_existing_tags()
+    print('засолка4')
     add_tags_to_posts()
     show_join()
     show_methods()
