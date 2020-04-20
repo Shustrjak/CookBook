@@ -266,17 +266,11 @@ def show_methods():
 
 
 def main():
-    """
-    :return:
-    """
+
     Base.metadata.create_all()
-    print('засолка')
     create_post_user_tags()
-    print('засолка2')
     create_users_posts()
-    print('засолка3')
     show_existing_tags()
-    print('засолка4')
     add_tags_to_posts()
     show_join()
     show_methods()
